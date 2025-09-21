@@ -53,3 +53,6 @@ Hay un ejemplo de un servidor sencillo en el archivo *main.c*
 en el repositorio.
 ## Funciónes para manipular la respuesta
 Aun no.
+## Compilar
+Esta libreria esta hecha simplemente con un fichero C, 
+sus cabeceras y una linea de comando(por ahora) **clang main.c -o webc**
