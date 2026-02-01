@@ -1,5 +1,6 @@
 # webC
-Simple libreria para crear servidores webs en C de forma muy sencilla
+Simple libreria para crear servidores webs en C de forma muy sencilla con el objetivo de practicar y crear o tratar crear una libreria MVC.
+Esta en una fase muy temprana y solo para local y curiosidad y aprender más.
 # Todo es una pagina
 Si exactamente todo, si tu pagina muestra una imagen esa es una pagina
 si muestra codigo js, css, video, etc. Todo ello necesita de una 'pagina'
