@@ -53,6 +53,137 @@ Hay un ejemplo de un servidor sencillo en el archivo *main.c*
 en el repositorio.
 ## Funciónes para manipular la respuesta
 Aun no.
+## CHTML
+# Sistema de Plantillas CHTML
+
+Sistema minimalista de plantillas para C con escape automático, condicionales, includes y formateo. Los valores son el indice de el arreglo pasado.
+## Características
+
+### 1. Sustitución básica
+```
+<# 0 #>  - Muestra el valor del índice 0 con escape HTML automático
+<#! 0 #> - Muestra el valor sin escape
+```
+
+### 2. Condicionales
+```
+<# if 0 #>
+    Contenido que se muestra si el valor 0 es verdadero
+<# endif #>
+```
+
+Valores verdaderos:
+- Strings no vacíos y diferentes de "0"
+- Enteros diferentes de 0
+- Floats diferentes de 0.0
+- Dates no nulas
+
+### 3.Se puede incluir codigo html desde otro lado
+```
+<# include header.html #>
+<# include footer.html #>
+```
+
+Los includes son relativos al directorio de la plantilla principal.
+
+### 4. Formateo
+```
+<# 0 | precie #>    - Formatea como $123.45
+<# 0 | date #>     - Formatea DATE como DD/MM/YYYY
+<# 0 | hour #>      - Formatea hora como HH:MM:SS
+<# 0 | full_time #>  - Formatea DATE y hora completas
+```
+
+## Tipos de valores
+
+```
+typedef enum {
+    TYPE_STRING,  // char*
+    TYPE_INT,     // int*
+    TYPE_FLOAT,   // float*
+    TYPE_DATE    // time_t*
+} TypeValue;
+
+typedef struct {
+    void * value;
+    TypeValue type;
+} Template;
+```
+
+## Uso
+
+```
+//En la función callback
+string ejemplo () {
+    int edad = 25;
+    float precio = 1599.99;
+    time_t ahora = time(NULL);
+
+    Template t[] = {
+        {.value = "Juan Pérez", .type = TYPE_STRING},
+        {.value = &edad, .type = TYPE_INT},
+        {.value = "Activo", .type = TYPE_STRING},
+        {.value = &precio, .type = TYPE_FLOAT},
+        {.value = &ahora, .type = TYPE_DATE},
+        {.value = "<script>alert('Hola mundo')</script>", .type = TYPE_STRING},
+        {.value = "1", .type = TYPE_STRING},
+        {.value = "0", .type = TYPE_STRING}
+    };
+    char * r = chtml("layouts/plantilla.html", t);
+    if (r) {
+        return r;
+    }
+    return NULL;
+}
+```
+En plantilla.html
+```
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Perfil de <# 0 #></title>
+</head>
+<body>
+    <# include header.html #>
+
+    <h1>Informacion del Usuario</h1>
+
+    <p>Nombre: <# 0 #></p>
+    <p>Edad: <# 1 #> años</p>
+    <p>Estado: <# 2 #></p>
+    <p>Precio del producto: <# 3 | precie #></p>
+    <p>Fecha de registro: <# 4 | date #></p>
+    <p>Hora exacta: <# 4 | hour #></p>
+    <p>Fecha completa: <# 4 | full_time #></p>
+
+    <h2>Escape HTML automatico</h2>
+    <p>Texto escapado: <# 5 #></p>
+    <p>Texto sin escapar: <#! 5 #></p>
+
+    <h2>Condicionales</h2>
+
+    <# if 6 #>
+    <div class="activo">
+        <p>El usuario está activo y verificado</p>
+    </div>
+    <# endif #>
+
+    <# if 7 #>
+    <div class="inactivo">
+        <p>Este mensaje no se mostrara porque el valor es "0"</p>
+    </div>
+    <# endif #>
+
+    <# include footer.html #>
+</body>
+</html>
+```
+
+## Seguridad basica
+- Escape HTML automático por defecto previene XSS
+- Solo usa <#! #> cuando quieras insertar html desde el servidor
+- Los condicionales no ejecutan código arbitrario
+- Los includes solo permiten archivos, no URLs
 ## Compilar
 Esta libreria esta hecha simplemente con un fichero C, 
 sus cabeceras y una linea de comando(por ahora) **clang main.c -o webc**
