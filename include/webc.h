@@ -15,8 +15,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
-//#include <sqlite3.h>
-//#include <curl/curl.h>
 #include <stdbool.h>
 
 typedef char * string;
@@ -73,6 +71,24 @@ typedef struct {
     string mime_type[MAX_VIEWS];
 } view;
 
+typedef enum {
+    TYPE_STRING,
+    TYPE_INT,
+    TYPE_FLOAT,
+    TYPE_DATE
+} TypeValue;
+
+typedef struct {
+    void * value;
+    TypeValue type;
+} Template;
+
+typedef struct {
+    char* datas;
+    size_t size;
+    size_t len;
+} Buffer;
+
 typedef struct {
 } model;
 
@@ -88,4 +104,3 @@ void string_cat (string result, String format, ...){
 }
 
 #endif
-
